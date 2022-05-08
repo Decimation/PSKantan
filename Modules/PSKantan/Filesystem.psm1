@@ -197,10 +197,10 @@ function Get-RegistryFileType {
 
 function Get-SanitizedFilename {
 	param (
-		$origFileName
+		$origFileName, $repl = ''
 	)
 	$invalids = [System.IO.Path]::GetInvalidFileNameChars()
-	$newName = [String]::Join('_', $origFileName.Split($invalids, 
+	$newName = [String]::Join($repl, $origFileName.Split($invalids, 
 			[System.StringSplitOptions]::RemoveEmptyEntries)).TrimEnd('.')
 	
 	return $newName
