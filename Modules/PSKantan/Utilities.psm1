@@ -76,7 +76,10 @@ function QGit {
 	[CmdletBinding()]
 	param (
 		[Parameter(Mandatory = $false)]
-		$Update
+		$Update,
+		[Parameter(Mandatory = $false)]
+		$Message
+		
 	)
 	
 	if ($Update) {
@@ -85,8 +88,9 @@ function QGit {
 
 	#[datetime]::Now.ToString("yyyy-MM-dd @ HH:mm:ss")
 
+	$Message ??= "$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
 	git.exe add .
-	git.exe commit -m "$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
+	git.exe commit -m $Message
 	git.exe push
 }
 

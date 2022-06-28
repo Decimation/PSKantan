@@ -88,19 +88,6 @@ function Adb-SyncItems {
 
 <#
 .Description
-Deletes file
-#>
-function Adb-RemoveItem {
-	param (
-		[Parameter(Mandatory = $true)]
-		[string]$src
-	)
-	$a = @(Remove-Item "$src")
-	Invoke-AdbCommand @a
-}
-
-<#
-.Description
 ADB enhanced passthru
 #>
 function adb {
@@ -124,6 +111,21 @@ function adb {
 	
 	adb.exe @argBuf
 }
+
+<#
+.Description
+Deletes file
+#>
+function Adb-RemoveItem {
+	param (
+		[Parameter(Mandatory = $true)]
+		[string]$src
+	)
+	$a = @(Remove-Item "$src")
+	Invoke-AdbCommand @a
+}
+
+
 
 function Adb-GetDevices {
 	$d = (adb devices) -as [string[]]
@@ -214,7 +216,9 @@ function Adb-GetItems {
 		[Parameter()]
 		$x,
 		[Parameter(Mandatory = $false)]
-		$t = 'f'
+		$t = 'f',
+		[parameter(Mandatory=$false)]
+		$Pattern
 	)
 	
 	$r = Adb-Find -x $x -type $t
