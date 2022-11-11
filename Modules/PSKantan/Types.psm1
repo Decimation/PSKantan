@@ -444,6 +444,28 @@ function Set-Constant {
 }
 
 Set-Alias const Set-Constant
+function Set-Readonly {
+	
+	[CmdletBinding()]
+	param(
+		[Parameter(Mandatory = $true, Position = 0)]
+		[string][ValidateNotNullOrEmpty()]$name,
+  
+		[Parameter(Mandatory = $true, Position = 1)]
+		[char][ValidateSet('=')]$link,
+  
+		[Parameter(Mandatory = $true, Position = 2)]
+		[object][ValidateNotNullOrEmpty()]$value
+  
+		#[Parameter(Mandatory=$false, Position=3)]
+		#[ValidateSet("r")]
+		#[object][ValidateNotNullOrEmpty()]$arg,
+	)
+
+	Set-SpecialVar -n $name -v $value -o ([System.Management.Automation.ScopedItemOptions]::ReadOnly)
+}
+
+Set-Alias readonly Set-Readonly
 
 function New-PInvoke {
 	param (

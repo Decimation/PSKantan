@@ -24,6 +24,13 @@ $global:STD_ERR = 2
 
 # endregion
 
+function ConvertTo-HexString {
+	param (
+		[byte[]]$x
+	)
+	return	($x | ForEach-Object { "0x$($_.ToString("X"))" }) -join ' '
+}
+
 function Write-Quick {
 
 	$t = typeof $args
@@ -61,8 +68,9 @@ function Write-Pretty {
 ytmdl enhanced passthru
 #>
 function ytmdl {
-	Write-Pretty $MyInvocation $args $PSCmdlet
-	py.exe (Find-Item ytmdl) @args
+	#Write-Pretty $MyInvocation $args $PSCmdlet
+	#py.exe $(Find-Item ytmdl) @args
+	& $(Find-Item ytmdl)
 }
 
 
@@ -1039,4 +1047,11 @@ function Start-Sound {
 	$sp = [System.Media.SoundPlayer]::new($Value)
 	$sp.Play()
 	$sp.Dispose()
+}
+
+function Get-QInfo {
+	param (
+		$x
+	)
+	
 }

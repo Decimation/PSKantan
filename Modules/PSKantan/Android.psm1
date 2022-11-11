@@ -420,6 +420,7 @@ function Adb-GetPackages {
 enum EscapeType {
 	Shell
 	Exchange
+	Simple
 }
 
 
@@ -428,13 +429,16 @@ function Adb-Escape {
 		[Parameter(Mandatory = $true)]
 		[string]$x,
 		[Parameter(Mandatory = $false)]
-		[EscapeType]$e = 'Shell'
+		[EscapeType]$e='Simple'
 	)
 	
 	switch ($e) {
 		Shell {
 			# $x = $x.Replace('`', [string]::Empty)
-			$x = $x.Replace(' ', '\ ').Replace('(', '\(').Replace(')', '\)')
+			$x = $x.Replace(' ', '\ ')
+			.Replace('(', '\(')
+			.Replace(')', '\)')
+			.Replace('"','\"')
 			
 			return $x
 		}
@@ -453,7 +457,11 @@ function Adb-Escape {
 			}
 			return PathJoin($x3, '/')
 		}
-		Default {
+		Simple {
+			return $x.Replace('"','\"')
+		}
+		default{
+
 		}
 	}
 }

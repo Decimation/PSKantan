@@ -14,16 +14,19 @@ function Find-Item {
 		[Parameter(Mandatory = $true)]
 		[string]$s,
 		[Parameter(Mandatory = $false)]
-		[System.Management.Automation.CommandTypes]$c = 'All', 
-		[switch]$pw = $false
+		[System.Management.Automation.CommandTypes]$c = 'All'
+	
+		
 	)
 	
 	$a = (Get-Command $s -CommandType $c).Path
 
-	if ((Test-Command 'whereis' Application) -and (-not $a)) {
+	
+
+	<# if ((Test-Command 'whereis' Application) -and (-not $a)) {
 		return (whereis.exe $s)
-	}
-		
+	} #>
+	
 	return $a
 }
 	
