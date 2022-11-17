@@ -62,7 +62,9 @@ function Search-InFiles {
 		-Recurse -Depth $Depth -ErrorAction SilentlyContinue
 
 	$r2 = $r | ForEach-Object {
-		Get-Content $_ | Select-String $ContentFilter
+		Write-Host "$_ :`n"
+		
+		Select-String -Path $_  $ContentFilter
 	}
 
 	return $r2

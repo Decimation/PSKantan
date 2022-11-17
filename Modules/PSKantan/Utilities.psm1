@@ -5,7 +5,8 @@ using namespace System.Linq.Enumerable
 
 
 # region Unicode
-$global:UNI_ARROW = $([char]0x2192)
+$global:UNI_ARROW_RIGHT = $([char]0x2192)
+$global:UNI_ARROW_LEFT = $([char]0x2190)
 $global:UNI_ZWS = $([char]"`u{200b}")
 $script:UNI_BULLET = '•'
 # endregion
