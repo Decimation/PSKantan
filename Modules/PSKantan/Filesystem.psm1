@@ -2,7 +2,16 @@
 
 
 
-
+function Get-Name {
+	param (
+		$x,[switch]$no_ext
+	)
+	$fi=[System.IO.FileInfo]::new($x)
+	if ($no_ext) {
+		return [System.IO.Path]::GetFileNameWithoutExtension($fi.FullName)
+	}
+	return $fi.Name
+}
 function OpenHere {
 	Start-Process $(Get-Location)
 }
@@ -85,7 +94,7 @@ function New-RandomFile {
 		[long]$length,
 		[Parameter(Mandatory = $false)]
 		[string]$file,
-		[switch][bool]$nullFile
+		[switch]$nullFile
 	)
 	
 	if (!($file)) {

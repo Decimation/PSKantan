@@ -92,14 +92,14 @@ ADB enhanced passthru
 #>
 function adb {
 	
-	$argBuf = [System.Collections.Generic.List[string]]::new()
-	$argBuf.AddRange([string[]]$args)
+	$argBuf = @()
+	$argBuf += $args
 	
-	Write-Verbose "Original args: $(Write-Quick $argBuf)`n"
+	Write-Verbose "Original args: $(Write-Quick $($argBuf -join ' '))`n"
 	
 	switch ($argBuf[0]) {
 		'push' {
-			if ($argBuf.Count -lt 3) {
+			if ($argBuf.Length -lt 3) {
 				$argBuf += 'sdcard/'
 			}
 		}
@@ -107,7 +107,7 @@ function adb {
 		}
 	}
 	
-	Write-Verbose "Final args: $(Write-Quick $argBuf)"
+	Write-Verbose "Final args: $(Write-Quick $($argBuf -join ' '))"
 	
 	adb.exe @argBuf
 }
@@ -123,6 +123,16 @@ function Adb-RemoveItem {
 	)
 	$a = @(Remove-Item "$src")
 	Invoke-AdbCommand @a
+}
+
+function Adb-Copy {
+	param (
+		$v
+	)
+	$s = "am start-activity -a android.intent.action.SEND -e android.intent.extra.TEXT '$v' -t 'text/plain' com.tengu.sharetoclipboard"
+	$vv=@('shell',$s)
+	return adb @vv
+
 }
 
 
@@ -217,7 +227,7 @@ function Adb-GetItems {
 		$x,
 		[Parameter(Mandatory = $false)]
 		$t = 'f',
-		[parameter(Mandatory=$false)]
+		[parameter(Mandatory = $false)]
 		$Pattern
 	)
 	
@@ -429,7 +439,7 @@ function Adb-Escape {
 		[Parameter(Mandatory = $true)]
 		[string]$x,
 		[Parameter(Mandatory = $false)]
-		[EscapeType]$e='Simple'
+		[EscapeType]$e = 'Simple'
 	)
 	
 	switch ($e) {
@@ -438,7 +448,7 @@ function Adb-Escape {
 			$x = $x.Replace(' ', '\ ')
 			.Replace('(', '\(')
 			.Replace(')', '\)')
-			.Replace('"','\"')
+			.Replace('"', '\"')
 			
 			return $x
 		}
@@ -458,9 +468,9 @@ function Adb-Escape {
 			return PathJoin($x3, '/')
 		}
 		Simple {
-			return $x.Replace('"','\"')
+			return $x.Replace('"', '\"')
 		}
-		default{
+		default {
 
 		}
 	}
