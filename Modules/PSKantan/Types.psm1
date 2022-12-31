@@ -1,6 +1,27 @@
 
 # region Objects
 
+function ConvertTo-Array {
+	param (
+		[Parameter(Mandatory = $true)]
+		[hashtable]$Value,
+		[switch]$RemoveNull
+	)
+	
+	$k = $Value.Keys
+	$v = $Value.Values
+	$r = @()
+	for ($i = 0; $i -lt $v.Count; $i++) {
+		$r1 = @($k[$i], $v[$i])
+		if ($RemoveNull) {
+			$r1 = $r1 -notlike $null
+		}
+
+		$r += $r1
+	}
+	return $r
+}
+
 function Get-SubstringBetween {
 	param ([string]$value,
 		[string]$a,
