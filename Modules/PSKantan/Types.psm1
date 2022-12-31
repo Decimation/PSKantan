@@ -8,8 +8,8 @@ function ConvertTo-Array {
 		[switch]$RemoveNull
 	)
 	
-	$k = $Value.Keys
-	$v = $Value.Values
+	$k = [array]$Value.Keys
+	$v = [array]$Value.Values
 	$r = @()
 	for ($i = 0; $i -lt $v.Count; $i++) {
 		$r1 = @($k[$i], $v[$i])
