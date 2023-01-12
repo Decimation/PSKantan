@@ -1056,3 +1056,20 @@ function Get-QInfo {
 	)
 	
 }
+
+function Read-Confirmation {
+	param (
+		[Parameter(Mandatory = $false)]
+		$Prompt,
+
+		[Parameter(Mandatory=$false)]
+		$Options=@('y','n','a')
+	)
+	#todo: case sensitivity?
+
+	Write-Host "$Prompt [$($Options -join ',')]"
+	$o = Read-Host
+	$r = $o -in $Options
+
+	return $o
+}

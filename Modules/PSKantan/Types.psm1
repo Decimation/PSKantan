@@ -514,3 +514,62 @@ public static extern $returnType $funcName($funcParams);
 	
 }
 
+
+function Get-ForEach {
+	param (
+		[Parameter(ValueFromPipeline)]
+		$Value,
+
+		[Parameter()]
+		$Func,
+
+
+		[switch]$Copy
+	)
+
+	
+	process {
+		$Value2 = @()
+
+		for ($i = 0; $i -lt $Value.Count; $i++) {
+			$t = $Value[$i]
+			$r = & $Func @t
+
+			if ($Copy){
+				$Value2 += $r
+			}
+			else {
+				$Value[$i] = $r
+			}
+		}
+	
+		if ($Copy) {
+			return $Value2
+		}
+		else {
+			return $Value
+		}
+	}
+}
+
+function Get-Select {
+	param (
+		[Parameter(ValueFromPipeline)]
+		$Value,
+
+		[Parameter()]
+		$Func
+
+	)
+	process {
+
+		$Value2 = @()
+		for ($i = 0; $i -lt $Value.Count; $i++) {
+			$t = $Value[$i]
+			$r = & $Func @t
+			$Value2 += $r
+		}
+		
+		return $Value2
+	}
+}
