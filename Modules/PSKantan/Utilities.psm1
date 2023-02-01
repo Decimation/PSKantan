@@ -87,7 +87,9 @@ function QGit {
 		[Parameter(Mandatory = $false)]
 		$Update,
 		[Parameter(Mandatory = $false)]
-		$Message
+		$Message,
+		[Parameter(Mandatory = $false)]
+		[switch]$DeferPush
 		
 	)
 	
@@ -98,9 +100,11 @@ function QGit {
 	#[datetime]::Now.ToString("yyyy-MM-dd @ HH:mm:ss")
 
 	$Message ??= "$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
-	git.exe add .
+	& git @('add', '.')
 	git.exe commit -m $Message
-	git.exe push
+	if (-not $DeferPush) {
+		git.exe push
+	}
 }
 
 # endregion
@@ -1072,4 +1076,31 @@ function Read-Confirmation {
 	$r = $o -in $Options
 
 	return $o
+}
+
+function Read-HostEx {
+	param (
+		[Parameter()]
+		$Message,
+		[Parameter()]
+		[double]
+		$Timeout,
+		[Parameter()]
+		[scriptblock]
+		$TimeoutFunc
+	)
+	
+	Write-Host "$Message"
+
+	$timer = New-Object System.Timers.Timer
+	$timer.Interval=$Timeout
+	$timer.Enabled = $true
+	$timer.AutoReset=$false
+
+	Register-ObjectEvent -InputObject $timer -EventName Elapsed -Action $TimeoutFunc
+
+	$timer.Start()
+	
+	$timer.Dispose()
+	
 }

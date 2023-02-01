@@ -219,3 +219,9 @@ function Get-SanitizedFilename {
 	
 	return $newName
 }
+
+
+function Get-FileNameInfo {
+	param ($x) return $($(Resolve-Path $x) -as [string]).Split('.')[0]
+	
+}
