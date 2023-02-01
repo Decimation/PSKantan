@@ -1083,7 +1083,7 @@ function Read-HostEx {
 		[Parameter()]
 		$Message,
 		[Parameter()]
-		[double]
+		[timespan]
 		$Timeout,
 		[Parameter()]
 		[scriptblock]
@@ -1092,7 +1092,7 @@ function Read-HostEx {
 	
 	Write-Host "$Message"
 
-	$timer = New-Object System.Timers.Timer
+	<# $timer = New-Object System.Timers.Timer
 	$timer.Interval=$Timeout
 	$timer.Enabled = $true
 	$timer.AutoReset=$false
@@ -1101,6 +1101,17 @@ function Read-HostEx {
 
 	$timer.Start()
 	
-	$timer.Dispose()
-	
+	$timer.Dispose() #>
+
+	# Wait-Event -Timeout $Timeout -SourceIdentifier $($Message.GetHashCode())
+
+	# Start-Job -Name $($Message.GetHashCode()) -ScriptBlock
+	[timespan]$elapsed = 0;
+	[timespan]$delta = [timespan]::FromSeconds(1)
+	Write-Output "Press any key to abort the following wait time."
+	while ( (-not [System.Console]::KeyAvailable) -and ($elapsed -lt $Timeout) ) {
+		Write-Host ("`rWaiting for: " + ($Timeout - $elapsed)) -NoNewline
+		Start-Sleep $delta
+		$elapsed+=$delta
+	}
 }
