@@ -25,6 +25,65 @@ $global:STD_ERR = 2
 
 # endregion
 
+function Get-ParsedTime {
+	[Outputtype([timespan])]
+	param ([string]$t, [switch]$simpleFormat)
+
+	
+	if ($simpleFormat) {
+		$regexPattern = '^(?:(?<hours>\d+)h)?(?:(?<minutes>\d+)m)?(?:(?<seconds>\d+)s)?(?:(?<milliseconds>\d+)ms)?$'
+		$match = $t -match $regexPattern
+		
+		if ($match) {
+			$hours = [int]$matches['hours']
+			$minutes = [int]$matches['minutes']
+			$seconds = [int]$matches['seconds']
+			$milliseconds = [int]$matches['milliseconds']
+				
+			# Create a TimeSpan object based on the extracted values
+			$timeSpan = New-TimeSpan -Hours $hours -Minutes $minutes -Seconds $seconds -Milliseconds $milliseconds
+			return $timeSpan
+		}
+		else {
+			Write-Error "Invalid time format. Please use the format '0h0m0s0ms' or any combination of the components."
+			return $null
+		}
+	}
+		
+	$st = $t.Split(':')
+	switch ($st.Length) {
+		
+		1 {
+			$t = [TimeSpan]::FromSeconds($t)
+			return $t;
+		}
+		2 {
+			$t = "0:" + $t
+		}
+		
+	}
+	
+	try {
+		$t = [timespan]::ParseExact($t, "g", [cultureinfo]::CurrentCulture)	
+	}
+	catch {
+		$t = ([timespan]::Parse($t))
+	}
+
+
+	return [timespan] $t
+}
+
+
+function qjoin {
+	switch ($args.GetType()) {
+		[array] {
+			return $args -join ','
+		}
+	}
+	
+}
+
 function ConvertTo-HexString {
 	param (
 		[byte[]]$x
@@ -1066,14 +1125,15 @@ function Read-Confirmation {
 		[Parameter(Mandatory = $false)]
 		$Prompt,
 
-		[Parameter(Mandatory=$false)]
-		$Options=@('y','n','a')
+		[Parameter(Mandatory = $false)]
+		$Options = @('y', 'n', 'a')
 	)
 	#todo: case sensitivity?
 
 	Write-Host "$Prompt [$($Options -join ',')]"
 	$o = Read-Host
 	$r = $o -in $Options
+	Write-Verbose "$r"
 
 	return $o
 }
@@ -1112,6 +1172,6 @@ function Read-HostEx {
 	while ( (-not [System.Console]::KeyAvailable) -and ($elapsed -lt $Timeout) ) {
 		Write-Host ("`rWaiting for: " + ($Timeout - $elapsed)) -NoNewline
 		Start-Sleep $delta
-		$elapsed+=$delta
+		$elapsed += $delta
 	}
 }

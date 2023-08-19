@@ -1,17 +1,26 @@
 # region Filesystem IO
 
 
-
 function Get-Name {
 	param (
-		$x,[switch]$no_ext
+		[Parameter(Mandatory = $true)]
+		$x,
+		[switch]$no_ext,
+		[switch]$full_path
 	)
-	$fi=[System.IO.FileInfo]::new($x)
+	$fi = [System.IO.FileInfo]::new($x)
+	$s=  $fi.Name
 	if ($no_ext) {
-		return [System.IO.Path]::GetFileNameWithoutExtension($fi.FullName)
+		$s= [System.IO.Path]::GetFileNameWithoutExtension($fi.FullName)
 	}
-	return $fi.Name
+	if ($full_path){
+		$s = Join-Path $fi.Directory $s
+	}
+	return $s
 }
+
+Set-Alias gn Get-Name
+
 function OpenHere {
 	Start-Process $(Get-Location)
 }
@@ -73,7 +82,7 @@ function Search-InFiles {
 	$r2 = $r | ForEach-Object {
 		Write-Host "$_ :`n"
 		
-		Select-String -Path $_  $ContentFilter
+		Select-String -Path $_ $ContentFilter
 	}
 
 	return $r2
@@ -222,6 +231,7 @@ function Get-SanitizedFilename {
 
 
 function Get-FileNameInfo {
-	param ($x) return $($(Resolve-Path $x) -as [string]).Split('.')[0]
+	param ($x) 
 	
+	return $($(Resolve-Path $x) -as [string]).Split('.')[0]
 }

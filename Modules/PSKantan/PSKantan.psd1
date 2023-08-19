@@ -12,6 +12,6 @@
 	AliasesToExport       = '*'
 	Description="Utilities by RDS"
 	GUID                  = '452f3f44-712b-460d-8ced-88fb37aaf8d6'
-	NestedModules         = @('Android', 'Utilities', 'Filesystem', 'Types')
+	NestedModules         = @('Utilities', 'Filesystem', 'Types')
 	#ModuleList            = @('Android')
 }
