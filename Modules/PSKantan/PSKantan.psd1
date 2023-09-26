@@ -10,7 +10,7 @@
 	CmdletsToExport       = '*'
 	VariablesToExport     = '*'
 	AliasesToExport       = '*'
-	Description="Utilities by RDS"
+	Description           = "Utilities by RDS"
 	GUID                  = '452f3f44-712b-460d-8ced-88fb37aaf8d6'
 	NestedModules         = @('Utilities', 'Filesystem', 'Types')
 	#ModuleList            = @('Android')
