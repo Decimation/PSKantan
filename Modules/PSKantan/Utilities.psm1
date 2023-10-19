@@ -1175,3 +1175,27 @@ function Read-HostEx {
 		$elapsed += $delta
 	}
 }
+
+function global:Set-ColorVar {
+	param (
+		[Parameter(Position = 0)]
+		$n,
+		[Parameter(Position = 1)]
+		$r,
+		[Parameter(Position = 2)]
+		$g,
+		[Parameter(Position = 3)]
+		$b,
+
+		[Parameter(Position = 4)]
+		[ValidateSet('fg', 'bg')]
+		$type='fg',
+
+		[Parameter(Position = 5)]
+		[string]
+		$scope = 'global'
+	)
+	
+	
+	Set-Variable -Name $n -Value $PSStyle.Foreground.FromRgb($r, $g, $b) -Scope $scope
+}
