@@ -9,11 +9,11 @@ function Get-Name {
 		[switch]$full_path
 	)
 	$fi = [System.IO.FileInfo]::new($x)
-	$s=  $fi.Name
+	$s = $fi.Name
 	if ($no_ext) {
-		$s= [System.IO.Path]::GetFileNameWithoutExtension($fi.FullName)
+		$s = [System.IO.Path]::GetFileNameWithoutExtension($fi.FullName)
 	}
-	if ($full_path){
+	if ($full_path) {
 		$s = Join-Path $fi.Directory $s
 	}
 	return $s
@@ -110,25 +110,50 @@ function New-RandomFile {
 		$file = $(New-TempFile)
 	}
 	
-	if ((Test-Path $file)) {
-		return $false;
+	if (-not (Test-Path $file)) {
+		# New-Item -ItemType File -Path $file
+		# return $false;
+		
 	}
 	
 	$buf = & {
 		fsutil file createnew $file $length
 	}
-	Write-Verbose "$buf"
+	Write-Host "$buf"
 	
 	if (($nullFile)) {
 		return;
 	}
 	
 	$fs = [System.IO.File]::OpenWrite($(Resolve-Path $file))
-	$rg = [byte[]]$(New-RandomArray $length)
-	$fs.Write($rg, 0, $rg.Length)
-	$fs.Flush()
-	$fs.Close()
-	$fs.Dispose()
+	$br = [System.IO.BinaryWriter]::new($fs)
+
+	try {
+		Get-Random -Count $length | ForEach-Object -Process {
+			$br.Write($_)
+			$p = $br.BaseStream.Position
+			$extra = $p - $length
+			
+			Write-Progress -Activity "Allocate $file" -Status "Writing to $file | $p / $length" `
+				-PercentComplete $([System.Math]::Clamp($p / $length * 100, 0, 100))
+			
+			if ($p % 50 -eq 0) {
+				$br.BaseStream.Flush()
+			}
+			if ($extra -gt 0) {
+				break
+			}
+		}
+	}
+	finally {
+		$fs.Flush()
+		$fs.Close()
+		$fs.Dispose()
+		$br.Flush()
+		$br.Dispose()
+	}
+
+
 	
 	return $true;
 }
