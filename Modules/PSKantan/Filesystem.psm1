@@ -1,4 +1,5 @@
 # region Filesystem IO
+using namespace System.IO
 
 
 function Get-Name {
@@ -97,48 +98,56 @@ function New-TempFile {
 	return [System.IO.Path]::GetTempFileName()
 }
 
+
 function New-RandomFile {
 	param (
 		[Parameter(Mandatory = $true)]
-		[long]$length,
+		[long]$Length,
 		[Parameter(Mandatory = $false)]
-		[string]$file,
-		[switch]$nullFile
+		[string]$File,
+		[switch]$Empty
 	)
 	
-	if (!($file)) {
-		$file = $(New-TempFile)
+	if (-not ($File)) {
+		$File = $(New-TempFile)
 	}
 	
-	if (-not (Test-Path $file)) {
-		# New-Item -ItemType File -Path $file
+	if (-not (Test-Path $File)) {
+		# New-Item -ItemType File -Path $File
 		# return $false;
 		
+		$buf = & {
+			fsutil file createnew $File $Length
+		}
+		Write-Host "$buf"
 	}
 	
-	$buf = & {
-		fsutil file createnew $file $length
-	}
-	Write-Host "$buf"
 	
-	if (($nullFile)) {
-		return;
+	if (($Empty)) {
+		return $File
 	}
-	
-	$fs = [System.IO.File]::OpenWrite($(Resolve-Path $file))
-	$br = [System.IO.BinaryWriter]::new($fs)
 
+	$fp = $(Resolve-Path $File)
+	$fs = [File]::OpenWrite($fp)
+	$br = [System.IO.BinaryWriter]::new($fs)
+	$lc = $($Length / 8)
+	$ts = 0
+	$i = 0
 	try {
-		Get-Random -Count $length | ForEach-Object -Process {
-			$br.Write($_)
+		Get-Random -Minimum $([long]::MinValue) -Maximum $([long]::MaxValue) -Count $lc | ForEach-Object -Process {
+			$i++
+			$br.Write([long]$_)
 			$p = $br.BaseStream.Position
-			$extra = $p - $length
-			
-			Write-Progress -Activity "Allocate $file" -Status "Writing to $file | $p / $length" `
-				-PercentComplete $([System.Math]::Clamp($p / $length * 100, 0, 100))
+			$extra = $p - $Length
 			
 			if ($p % 50 -eq 0) {
 				$br.BaseStream.Flush()
+				$stat = @{
+					Activity        = "Allocate $File"
+					Status          = "Writing [$p / $Length] bytes [$i / $lc]"
+					PercentComplete = ($i / $lc) * 100
+				}
+				Write-Progress @stat
 			}
 			if ($extra -gt 0) {
 				break
@@ -146,25 +155,22 @@ function New-RandomFile {
 		}
 	}
 	finally {
-		$fs.Flush()
-		$fs.Close()
 		$fs.Dispose()
-		$br.Flush()
 		$br.Dispose()
 	}
-
-
 	
-	return $true;
+	$ts = $br.BaseStream.Length
+	Write-Host "Allocated $File with $ts bytes"
+	return $File;
 }
 
 
 function Get-FileBytes {
 	param (
 		[Parameter(Mandatory = $true)]
-		[string]$file
+		[string]$File
 	)
-	$b = [System.IO.file]::ReadAllBytes($file)
+	$b = [System.IO.file]::ReadAllBytes($File)
 	return $b
 }
 
