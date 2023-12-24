@@ -17,7 +17,7 @@ $script:SEPARATOR = $([string]::new('-', $Host.UI.RawUI.WindowSize.Width))
 $global:ANSI_START = "$([char]0x001b)"
 $global:ANSI_END = "`e[0m"
 
-$global:QDateFormat = "yyyy-mm-dd @ HH:mm:ss"
+$global:QDateFormat = "yyyy-MM-dd @ HH:mm:ss"
 
 $global:STD_IN = 0
 $global:STD_OUT = 1
@@ -1199,3 +1199,5 @@ function global:Set-ColorVar {
 	
 	Set-Variable -Name $n -Value $PSStyle.Foreground.FromRgb($r, $g, $b) -Scope $scope
 }
+
+
