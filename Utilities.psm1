@@ -1189,7 +1189,7 @@ function global:Set-ColorVar {
 
 		[Parameter(Position = 4)]
 		[ValidateSet('fg', 'bg')]
-		$type='fg',
+		$type = 'fg',
 
 		[Parameter(Position = 5)]
 		[string]
@@ -1201,3 +1201,22 @@ function global:Set-ColorVar {
 }
 
 
+function Find-Executable {
+	param (
+		$Name, 
+		[scriptblock] $Filter
+	)
+
+	$cmds = Get-Command $Name -CommandType All
+	$cmdPaths = $cmds | Select-Object -ExpandProperty Path
+	$cmdMatches = $cmdPaths | Where-Object { 
+		$s = [string](& cmd /c $_ -V 2>&1)
+		# Write-Debug "$s"
+		# $s -cmatch '3.10' 
+		$xs = & $Filter $s
+		$xs
+		# Write-Debug "$($Filter) | $s | $xs"
+	}
+	
+	return $cmdMatches
+}

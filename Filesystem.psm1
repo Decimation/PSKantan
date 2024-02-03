@@ -34,13 +34,9 @@ function Find-Item {
 		[string]$s,
 		[Parameter(Mandatory = $false)]
 		[System.Management.Automation.CommandTypes]$c = 'All'
-	
-		
 	)
 	
 	$a = (Get-Command $s -CommandType $c).Path
-
-	
 
 	<# if ((Test-Command 'whereis' Application) -and (-not $a)) {
 		return (whereis.exe $s)
