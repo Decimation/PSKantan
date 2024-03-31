@@ -20,6 +20,13 @@ function Get-Name {
 	return $s
 }
 
+function Get-ItemName {
+	param (
+		$Item
+	)
+	[Path]::GetFileNameWithoutExtension($Item)	
+}
+
 Set-Alias gn Get-Name
 
 function OpenHere {

@@ -276,7 +276,7 @@ function U {
 	throw "Invalid character code $Code"
 }
 
-function Wrap {
+function WrapNumber {
 	param($i, $n) 
 	return (($i % $n) + $n) % $n 
 }
@@ -1219,4 +1219,21 @@ function Find-Executable {
 	}
 	
 	return $cmdMatches
+}
+
+function pomf {
+	param (
+		[parameter(Mandatory, Position = 0)]
+		$Files,
+		$uppomf = "https://pomf2.lain.la/upload.php"
+	)
+
+	if (-not ($Files -is [System.IO.FileInfo])) {
+		$Files = Get-ChildItem $Files
+	}
+
+	$res = Invoke-WebRequest -Uri $uppomf -Method Post -Form @{'files[]' = $Files }
+
+	return $res
+
 }
