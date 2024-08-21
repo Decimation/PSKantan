@@ -536,7 +536,7 @@ function Get-ForEach {
 			$t = $Value[$i]
 			$r = & $Func @t
 
-			if ($Copy){
+			if ($Copy) {
 				$Value2 += $r
 			}
 			else {
@@ -573,4 +573,15 @@ function Get-Select {
 		
 		return $Value2
 	}
+}
+
+function Reset-HttpRequest {
+	param (
+		[System.Net.Http.HttpRequestMessage]$req
+	)
+	
+	$t = $req.GetType()
+	$f = $t.GetField("_sendStatus", [System.Reflection.BindingFlags]::NonPublic -bor [System.Reflection.BindingFlags]::GetField -bor [System.Reflection.BindingFlags]::Instance)
+	$f.SetValue($req, 0)
+	return $req
 }

@@ -1237,3 +1237,23 @@ function pomf {
 	return $res
 
 }
+
+function Get-RandomStringRange {
+	param (
+		[Parameter(Mandatory = $false)]
+		$UnicodeRange = [System.Text.Unicode.UnicodeRanges]::All,
+
+		[Parameter(Mandatory = $false)]
+		$Length = 1
+	)
+
+	$sb = [System.Text.StringBuilder]::new()
+
+	for ($i = 0; $i -lt $Length; $i++) {
+		$r = (Get-Random -Maximum $UnicodeRange.Length -Minimum 0)
+		$sb.Append([char]($UnicodeRange.FirstCodePoint + $r)) | Out-Null
+		
+	}
+
+	return $sb.ToString()
+}
