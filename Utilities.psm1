@@ -8,7 +8,12 @@ using namespace System.Linq.Enumerable
 $global:UNI_ARROW_RIGHT = $([char]0x2192)
 $global:UNI_ARROW_LEFT = $([char]0x2190)
 $global:UNI_ZWS = $([char]"`u{200b}")
+$global:UNI_ZWNJ = $([char]"`u{200c}")
 $script:UNI_BULLET = '•'
+$global:UNI_MAGIC_SPACE1 = ' ⁠ '
+$global:UNI_MAGIC_SPACE2 = " `u{2060} "
+$global:UNI_MAGIC_SPACE3 = '⁠'
+
 # endregion
 
 
@@ -17,13 +22,43 @@ $script:SEPARATOR = $([string]::new('-', $Host.UI.RawUI.WindowSize.Width))
 $global:ANSI_START = "$([char]0x001b)"
 $global:ANSI_END = "`e[0m"
 
-$global:QDateFormat = "yyyy-MM-dd @ HH:mm:ss"
+$global:QDateFormat = 'yyyy-MM-dd @ HH:mm:ss'
 
 $global:STD_IN = 0
 $global:STD_OUT = 1
 $global:STD_ERR = 2
 
 # endregion
+
+
+function Get-ListItemUI {
+	param (
+		[Parameter(Mandatory = $true)]
+		$Values,
+
+		[Parameter(Mandatory = $false)]
+		[scriptblock]
+		$Predicate
+	)
+	
+	$Predicate ??= [scriptblock] {
+		param($chInt)
+		$b = $chInt -ge 0 -and $chInt -lt $Values.Count
+		return $b
+	}
+
+	for ($i = 0; $i -lt $Values.Count; $i++) {
+		Write-Host "[$i] $($Values[$i])"
+	}
+
+	do {
+		$cki = [System.Console]::ReadKey($true)
+		$chInt = [char]::GetNumericValue($cki.KeyChar)
+		$b = & $Predicate $chInt
+	} while (-not $b)
+
+	return $chInt
+}
 
 function Get-ParsedTime {
 	[Outputtype([timespan])]
@@ -998,7 +1033,7 @@ function Get-PublicIP {
 
 
 function Get-Focus {
-	Add-Type @"
+	Add-Type @'
 	using System;
 	using System.Runtime.InteropServices;
 	
@@ -1006,7 +1041,7 @@ function Get-Focus {
 		[DllImport("user32.dll")]
 		public static extern IntPtr GetForegroundWindow();
 	}
-"@
+'@
 
 	$a = [tricks]::GetForegroundWindow()
 
@@ -1225,7 +1260,7 @@ function pomf {
 	param (
 		[parameter(Mandatory, Position = 0)]
 		$Files,
-		$uppomf = "https://pomf2.lain.la/upload.php"
+		$uppomf = 'https://pomf2.lain.la/upload.php'
 	)
 
 	if (-not ($Files -is [System.IO.FileInfo])) {
