@@ -1,6 +1,6 @@
 # region Filesystem IO
 using namespace System.IO
-
+using namespace System.Management.Automation
 
 function Get-Name {
 	param (
@@ -35,15 +35,15 @@ function OpenHere {
 
 function Find-Item {
 	[CmdletBinding()]
+	[OutputType([System.Management.Automation.CommandInfo])]
 	param (
-		
 		[Parameter(Mandatory = $true)]
-		[string]$s,
+		$InputObject,
 		[Parameter(Mandatory = $false)]
-		[System.Management.Automation.CommandTypes]$c = 'All'
+		[CommandTypes]$CommandTypes = 'All'
 	)
 	
-	$a = (Get-Command $s -CommandType $c).Path
+	$a = (Get-Command $InputObject -CommandType $CommandTypes)
 
 	<# if ((Test-Command 'whereis' Application) -and (-not $a)) {
 		return (whereis.exe $s)
@@ -51,9 +51,10 @@ function Find-Item {
 	
 	return $a
 }
-	
 
-Set-Alias whereitem Find-Item
+function whereitem {
+	Find-Item @args
+}
 
 function Search-InFiles {
 	param (

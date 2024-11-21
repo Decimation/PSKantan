@@ -65,6 +65,54 @@ function Convert-ObjToHashTable {
 	
 	
 }
+function Convert-HashtableToSplat {
+	[CmdletBinding()]
+	[outputtype([array])]
+	param (
+		[parameter(Mandatory = $true, ValueFromPipeline = $true)]
+		[hashtable]$HashTable,
+		[switch]$ExcludeNullValues,
+		[switch]$TrueAsSwitch,
+		[switch]$SeparateParameterArgument
+	)
+
+
+	process {
+		$Splat = @()
+		foreach ($key in $HashTable.Keys) {
+			$value = $HashTable[$key]
+			$splatAdd = @($key)
+			
+			
+
+			if ($ExcludeNullValues -and $value -eq $null) {
+				continue
+			}
+			
+			if ($TrueAsSwitch -and $value -is [bool] -and $value) {
+				
+			}
+			else {
+				if ($key -eq '') {
+					$splatAdd = $value
+				}
+				else {
+					$splatAdd += $value
+				}
+			}
+			
+			if ($SeparateParameterArgument) {
+				$splatAdd = $splatAdd -join ' '
+			}
+			
+			$Splat += $splatAdd
+		}
+		
+		# [array]::Reverse($Splat)
+
+		return $Splat
+	}
+}
 
 function Convert-Obj {
 	param (
@@ -219,19 +267,30 @@ function typename {
 
 function typeof {
 	[CmdletBinding()]
+	[OutputType([type])]
 	param (
-		[Parameter()]
-		$x
+		[Parameter(Mandatory, Position = 0, ValueFromPipeline)]
+		$InputObject
 	)
-	#return [type]::GetType((typename $x))
-	return $x.GetType()
+
+	process {
+
+		#return [type]::GetType((typename $x))
+		return $InputObject.GetType()
+	}
 }
 
 function typecodeof {
-	param ($x)
-	$t = $x.GetType()
-	$c = [type]::GetTypeCode($t)
-	return $c
+	[CmdletBinding()]
+	[OutputType([System.TypeCode])]
+	param (
+		[Parameter(Mandatory, Position = 0, ValueFromPipeline)]
+		$InputObject
+	)
+	process {
+		return (typeof $InputObject).TypeCode
+
+	}
 }
 
 # endregion
