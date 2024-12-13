@@ -111,14 +111,14 @@ function Get-ParsedTime {
 }
 
 
-function qjoin {
+<# function qjoin {
 	switch ($args.GetType()) {
 		[array] {
 			return $args -join ','
 		}
 	}
 	
-}
+} #>
 
 function ConvertTo-HexString {
 	param (
@@ -163,11 +163,11 @@ function Write-Pretty {
 .Description
 ytmdl enhanced passthru
 #>
-function ytmdl {
+<# function ytmdl {
 	#Write-Pretty $MyInvocation $args $PSCmdlet
 	#py.exe $(Find-Item ytmdl) @args
 	& $(Find-Item ytmdl)
-}
+} #>
 
 
 <#
@@ -207,15 +207,13 @@ function QGit {
 
 # region Functions
 
-function Get-CommandProcess {
+function New-CommandProcess {
 	[CmdletBinding()]
 	param (
 		[Parameter(Mandatory = $true)]
 		[string]$s
 	)
-	
 	$pinfo = [System.Diagnostics.ProcessStartInfo]@{
-
 		FileName               = 'cmd.exe'
 		RedirectStandardError  = $true
 		RedirectStandardOutput = $true
@@ -223,17 +221,15 @@ function Get-CommandProcess {
 		Arguments              = "/c $s"
 	}
 	
-	$p = New-Object System.Diagnostics.Process
 	$p.StartInfo = $pinfo
-	
+	$p = New-Object System.Diagnostics.Process
 	return $p
 }
 
 
 function Invoke-MsysCommand {
 	$rg = @('-c', $args)
-	msys2 @rg
-
+	& msys2 @rg
 }
 
 
@@ -246,7 +242,7 @@ function Invoke-CommandProcess {
 		[int]$std = $STD_OUT
 	)
 
-	$p = Get-CommandProcess $s
+	$p = New-CommandProcess $s
 	
 	$p.Start() | Out-Null
 	$p.WaitForExit()
@@ -271,7 +267,6 @@ function Invoke-CommandProcess {
 }
 
 
-
 function Invoke-CmdCommand {
 	#todo: use Invoke-Command
 	[CmdletBinding()]
@@ -286,7 +281,6 @@ function Invoke-CmdCommand {
 Set-Alias -Name ic -Value Invoke-Command
 
 # endregion
-
 
 
 function IsAdmin {
@@ -318,7 +312,6 @@ function WrapNumber {
 }
 
 
-
 function ConvertFrom-Base64 {
 	param (
 		$s
@@ -335,10 +328,10 @@ function ConvertFrom-Base64 {
 Set-Alias -Name ytdlp -Value yt-dlp.exe
 Set-Alias -Name ytdl -Value youtube-dl.exe
 Set-Alias -Name gdl -Value gallery-dl.exe
-Set-Alias -Name fg -Value ffmpeg
-Set-Alias -Name fp -Value ffprobe
-Set-Alias -Name mg -Value magick.exe
-Set-Alias -Name a2c -Value aria2c
+# Set-Alias -Name fg -Value ffmpeg
+# Set-Alias -Name fp -Value ffprobe
+# Set-Alias -Name mg -Value magick.exe
+# Set-Alias -Name a2c -Value aria2c
 
 #endregion
 
@@ -1149,12 +1142,12 @@ function Start-Sound {
 	$sp.Dispose()
 }
 
-function Get-QInfo {
+<# function Get-QInfo {
 	param (
 		$x
 	)
 	
-}
+} #>
 
 function Read-Confirmation {
 	param (

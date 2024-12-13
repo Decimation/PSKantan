@@ -410,8 +410,7 @@ function New-RandomArray {
 		[int]$c
 	)
 	$rg = [byte[]]::new($c)
-	$rand = [System.Random]::new()
-	$rand.NextBytes($rg)
+	[System.Random]::Shared.NextBytes($rg)
 	return $rg
 }
 
@@ -640,7 +639,9 @@ function Reset-HttpRequest {
 	)
 	
 	$t = $req.GetType()
-	$f = $t.GetField("_sendStatus", [System.Reflection.BindingFlags]::NonPublic -bor [System.Reflection.BindingFlags]::GetField -bor [System.Reflection.BindingFlags]::Instance)
+	$f = $t.GetField("_sendStatus", [System.Reflection.BindingFlags]::NonPublic -bor `
+			[System.Reflection.BindingFlags]::GetField -bor `
+			[System.Reflection.BindingFlags]::Instance)
 	$f.SetValue($req, 0)
 	return $req
 }
